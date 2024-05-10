@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from videoflix.views import SignUpView
+from videoflix.views import SignUpView, activate_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('signup/', SignUpView.as_view(), name='signup')
+    path('signup/', SignUpView.as_view(), name='signup'),
+    path('activate/', activate_user, name='activate-user')
 ]
