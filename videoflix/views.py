@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from .serializers import SignUpSerializer
 from cryptography.fernet import Fernet
 import os
+from django.core.mail import send_mail
 # Create your views here.
 
 class SignUpView(generics.CreateAPIView):
@@ -31,12 +32,18 @@ class SignUpView(generics.CreateAPIView):
         # token = Token.objects.create(user=user)
         key = os.getenv('FERNET_KEY').encode('utf-8')
         f = Fernet(key)
-        activation_token = f.encrypt(user.email.encode('utf-8'))
+        activation_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
+        send_mail(
+            "Your Videoflix user account has been created",
+            "Welcome to Videoflix!",
+            "no-reply@videoflix.com",
+            [user.email],
+            html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='http://127.0.0.1:8000/activate/?activationtoken={activation_token}'>Activate your account</a>",
+            fail_silently=False
+        )
         response = {
-            "email": user.email,
-            "token": activation_token.decode('utf-8')
+            "message": "User account has been created. Please check your mails for activation link."
         }
-
         headers = self.get_success_headers(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=headers)
   
@@ -54,6 +61,7 @@ def activate_user(request):
         user = result_set[0]
         user.is_active = True
         user.save()
+
         return Response({"message": "user has been activated"}, status=status.HTTP_200_OK)
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
     
