@@ -41,3 +41,7 @@ class User(AbstractUser):
 
     def __string__(self):
         return self.email
+
+class Video(models.Model):
+    title = models.CharField(max_length=100)
+    file = models.FileField(upload_to="videos")

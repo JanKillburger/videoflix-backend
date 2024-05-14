@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from .serializers import SignUpSerializer
 from cryptography.fernet import Fernet
 import os
-from django.core.mail import send_mail
+from .tasks import send_activation_mail
 # Create your views here.
 
 class SignUpView(generics.CreateAPIView):
@@ -33,19 +33,13 @@ class SignUpView(generics.CreateAPIView):
         key = os.getenv('FERNET_KEY').encode('utf-8')
         f = Fernet(key)
         activation_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
-        send_mail(
-            "Your Videoflix user account has been created",
-            "Welcome to Videoflix!",
-            "no-reply@videoflix.com",
-            [user.email],
-            html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='http://127.0.0.1:8000/activate/?activationtoken={activation_token}'>Activate your account</a>",
-            fail_silently=False
-        )
+        send_activation_mail(user.email, activation_token)
         response = {
             "message": "User account has been created. Please check your mails for activation link."
         }
         headers = self.get_success_headers(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=headers)
+      
   
 
 @api_view(['GET'])

@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_rq',
     #custom apps
-    'videoflix',
+    'videoflix.apps.VideoflixConfig',
 ]
 
 MIDDLEWARE = [
@@ -136,6 +136,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Custom files (Videos)
+
+MEDIA_ROOT = 'media/'
+MEDIA_URL = os.path.join(BASE_DIR, 'media/')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -149,3 +154,23 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'no-reply@videoflix.com'
+
+# Background tasks
+
+RQ_QUEUES = {
+    "default": {"HOST": "localhost", "PORT": 6379, "DB": 0, "DEFAULT_TIMEOUT": 360,},
+}
+
+# Redis caching
+
+CACHES = {
+  "default": {
+    "BACKEND": "django_redis.cache.RedisCache",
+    "LOCATION": "redis://127.0.0.1:6379/1",
+    "OPTIONS": {
+        "CLIENT_CLASS": "django_redis.client.DefaultClient"
+    },
+    "KEY_PREFIX": "videoflix"
+  }
+}
