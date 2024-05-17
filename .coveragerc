@@ -1,0 +1,6 @@
+# run 'coverage run --source='.' manage.py test videoflix' and then 'coverage report' in command line to see test coverage
+[run]
+omit =
+  */migrations/*
+  */config/*
+  manage.py
