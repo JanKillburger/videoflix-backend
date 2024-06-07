@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -25,8 +25,24 @@ class CustomUserManager(BaseUserManager):
             password=password
         )
         user.is_admin = True
+        user.is_active = True
+        user.is_staff = True
         user.save(using=self._db)
+        user.user_permissions.set(self.get_admin_permissions())
         return user
+    
+    def get_admin_permissions(self):
+        required_permissions = [
+            "Can add video",
+            "Can view video",
+            "Can change video",
+            "Can delete video",
+        ]
+        permissions = []
+        for permission in required_permissions:
+            permissions.append(Permission.objects.get(name=permission))
+
+        return permissions
 
 class User(AbstractUser):
     username = models.CharField(unique=False, max_length=150)
