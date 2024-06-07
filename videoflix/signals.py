@@ -2,6 +2,7 @@ from .models import Video
 from django.dispatch import receiver
 from django.db.models.signals import post_delete, post_save
 import os
+from django.conf import settings
 from .tasks import convert_video
 
 @receiver(post_save, sender=Video)
@@ -12,7 +13,8 @@ def run_convert_video(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=Video)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
   """Delete video file when Video object is deleted."""
-
-  if instance.file:
-    if os.path.isfile(instance.file.path):
-      os.remove(instance.file.path)
+  
+  media_path = os.path.join(settings.BASE_DIR, "media", "videos")
+  for file in os.listdir(media_path):
+    if file.startswith(str(instance.id) + "_" ):
+      os.remove(os.path.join(media_path, file))
