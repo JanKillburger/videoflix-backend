@@ -22,7 +22,7 @@ from videoflix.views import SignUpView, activate_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('django-rq', include('django_rq.urls')),
+    path('django-rq/', include('django_rq.urls')),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('activate/', activate_user, name='activate-user'),
     path('__debug__', include('debug_toolbar.urls')),

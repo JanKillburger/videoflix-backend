@@ -165,7 +165,12 @@ DEFAULT_FROM_EMAIL = 'no-reply@videoflix.com'
 # Background tasks
 
 RQ_QUEUES = {
-    "default": {"HOST": "localhost", "PORT": 6379, "DB": 0, "DEFAULT_TIMEOUT": 360,},
+    "default": {
+      "HOST": "localhost",
+      "PORT": 6379,
+      "DB": 0,
+      "DEFAULT_TIMEOUT": 360,
+      },
 }
 
 # Redis caching
