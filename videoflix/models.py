@@ -37,6 +37,10 @@ class CustomUserManager(BaseUserManager):
             "Can view video",
             "Can change video",
             "Can delete video",
+            "Can add user",
+            "Can view user",
+            "Can change user",
+            "Can delete user"
         ]
         permissions = []
         for permission in required_permissions:
@@ -61,3 +65,6 @@ class User(AbstractUser):
 class Video(models.Model):
     title = models.CharField(max_length=100)
     file = models.FileField(upload_to="videos")
+
+    def __string__(self):
+        return self.title
