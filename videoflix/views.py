@@ -58,4 +58,7 @@ def activate_user(request):
 
         return Response({"message": "user has been activated"}, status=status.HTTP_200_OK)
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+
+# Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
