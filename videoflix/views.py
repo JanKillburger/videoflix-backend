@@ -3,13 +3,17 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.forms import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
 from .serializers import SignUpSerializer
 from cryptography.fernet import Fernet
 import os
-from .tasks import send_activation_mail
+from .tasks import send_activation_mail, send_reset_password_email
+from django_rq import get_queue
+
+default_queue = get_queue("default")
 # Create your views here.
 
 class SignUpView(generics.CreateAPIView):
@@ -58,6 +62,23 @@ def activate_user(request):
 
         return Response({"message": "user has been activated"}, status=status.HTTP_200_OK)
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def request_password_reset(request):
+    try:
+        user = get_user_model().objects.get(email=request.data['email'])
+    except ObjectDoesNotExist:
+        return Response(status=400)
+    key = os.getenv('FERNET_KEY').encode('utf-8')
+    f = Fernet(key)
+    reset_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
+    default_queue.enqueue(send_reset_password_email, user.email, reset_token)
+    return Response(status=200)
+
+@api_view(['GET'])
+def reset_password(request, reset_token):
+    print(reset_token)
+    return Response(status=200)
 
 
 

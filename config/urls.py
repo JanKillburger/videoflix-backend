@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include,path
 from django.conf.urls.static import static
 from django.conf import settings
-from videoflix.views import SignUpView, activate_user
+from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +26,8 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('activate/', activate_user, name='activate-user'),
     path('__debug__', include('debug_toolbar.urls')),
+    path('request-password-reset/', request_password_reset),
+    path('reset-password/<str:reset_token>', reset_password),
 ]
 
 if settings.DEBUG:
