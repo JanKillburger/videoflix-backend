@@ -12,8 +12,11 @@ from cryptography.fernet import Fernet
 import os
 from .tasks import send_activation_mail, send_reset_password_email
 from django_rq import get_queue
+from datetime import datetime
 
 default_queue = get_queue("default")
+#Tokens for resetting password expire after 10 minutes
+TOKEN_EXPIRY_DURATION = 10 * 60 
 # Create your views here.
 
 class SignUpView(generics.CreateAPIView):
@@ -71,13 +74,20 @@ def request_password_reset(request):
         return Response(status=400)
     key = os.getenv('FERNET_KEY').encode('utf-8')
     f = Fernet(key)
-    reset_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
+    reset_token = f.encrypt_at_time(user.email.encode('utf-8'), int(datetime.now().timestamp() + TOKEN_EXPIRY_DURATION)).decode('utf-8')
     default_queue.enqueue(send_reset_password_email, user.email, reset_token)
     return Response(status=200)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def reset_password(request, reset_token):
-    print(reset_token)
+    key = os.getenv('FERNET_KEY').encode('utf-8')
+    f = Fernet(key)
+    expiry_timestamp = f.extract_timestamp(reset_token)
+    if expiry_timestamp < int(datetime.now().timestamp()):
+        print('Expired token')
+    else:
+        print('Valid token')
+    print(f'Expiry date/time: {datetime.fromtimestamp(expiry_timestamp)}')
     return Response(status=200)
 
 
