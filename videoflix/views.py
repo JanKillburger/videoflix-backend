@@ -62,8 +62,8 @@ def activate_user(request):
         user = result_set[0]
         user.is_active = True
         user.save()
-
-        return Response({"message": "user has been activated"}, status=status.HTTP_200_OK)
+        token = Token.objects.get_or_create(user=user)
+        return Response({"message": "user has been activated", "token": token.key}, status=status.HTTP_200_OK)
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -84,11 +84,19 @@ def reset_password(request, reset_token):
     f = Fernet(key)
     expiry_timestamp = f.extract_timestamp(reset_token)
     if expiry_timestamp < int(datetime.now().timestamp()):
-        print('Expired token')
+        return Response({"message": "Expired token. Request another password reset."}, status=400)
     else:
-        print('Valid token')
-    print(f'Expiry date/time: {datetime.fromtimestamp(expiry_timestamp)}')
-    return Response(status=200)
+        user_email = f.decrypt(reset_token.encode("utf-8")).decode("utf-8")
+        result = get_user_model().objects.filter(email=user_email)
+        if len(result) == 1:
+            user = result[0]
+            token = Token.objects.get(user=user)
+            token.delete()
+            token = Token.objects.create(user=user)
+            print(token.key)
+            return Response({"token": token.key, "message": "Password successfully reset."}, status=200)
+        else:
+            return Response({"message": "No user with this email address."}, status=400)
 
 
 

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     #3rd party apps
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_rq',
     'debug_toolbar',
     #custom apps
