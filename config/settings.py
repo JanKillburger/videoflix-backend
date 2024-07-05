@@ -28,9 +28,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+if os.getenv('DEBUG') == 'True':
+	DEBUG = True
+else:
+	DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1']
+print(f'Type of DEBUG: {type(DEBUG)}')
+print(f'Value of DEBUG: {DEBUG}')
+
+ALLOWED_HOSTS = [
+	'34.135.253.234',
+	'videoflix.jan-killburger.de',
+]
 
 INTERNAL_IPS = [
   "127.0.0.1",
@@ -103,7 +112,7 @@ DATABASES = {
         'USER': os.getenv('DATABASE_USERNAME'),
         'PASSWORD': os.getenv('DATABASE_USERPASSWORD'),
         'HOST': 'localhost',
-        'PORT': '5435',
+        'PORT': '5432',
     }
 }
 
@@ -146,7 +155,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/srv/videoflix/static' #os.path.join(BASE_DIR, "static")
 
 # Custom files (Videos)
 

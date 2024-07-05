@@ -87,10 +87,9 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-
 .env
-
 .venv
+static/
 
 # Media
 media/
