@@ -6,6 +6,7 @@ from django.forms import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from .serializers import SignUpSerializer
 from cryptography.fernet import Fernet
@@ -98,6 +99,11 @@ def reset_password(request, reset_token):
         else:
             return Response({"message": "No user with this email address."}, status=400)
 
-
+@api_view(['GET'])
+@login_required
+def get_media(request):
+    response = Response()
+    del response['Content-Type']
+    response['X-Accel-Redirect'] = request.path
 
 # Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
