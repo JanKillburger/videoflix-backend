@@ -160,7 +160,10 @@ STATIC_ROOT = '/srv/videoflix/static' #os.path.join(BASE_DIR, "static")
 
 # Custom files (Videos)
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+if DEBUG == True:
+	MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+else:
+	MEDIA_ROOT = '/var/www/html/videoflix/media/'
 MEDIA_URL = '/media/'
 
 # Default primary key field type
