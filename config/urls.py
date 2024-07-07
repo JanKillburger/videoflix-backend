@@ -19,7 +19,6 @@ from django.urls import include,path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media
-from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media
 
 urlpatterns = [
     path('admin/', admin.site.urls),
