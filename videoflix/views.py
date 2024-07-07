@@ -102,11 +102,10 @@ def reset_password(request, reset_token):
 
 @api_view(['GET'])
 @login_required
-def get_media(request, **kwargs):
+def get_media(request):
     response = HttpResponse()
     del response['Content-Type']
     response['X-Accel-Redirect'] = '/protected' + request.path
-    print(response.headers)
     return response
 
 # Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
