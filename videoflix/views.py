@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.forms import ValidationError
+from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
@@ -101,9 +102,11 @@ def reset_password(request, reset_token):
 
 @api_view(['GET'])
 @login_required
-def get_media(request):
-    response = Response()
+def get_media(request, **kwargs):
+    response = HttpResponse()
     del response['Content-Type']
-    response['X-Accel-Redirect'] = 'protected/' + request.path
+    response['X-Accel-Redirect'] = '/protected' + request.path
+    print(response.headers)
+    return response
 
 # Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
