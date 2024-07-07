@@ -104,6 +104,6 @@ def reset_password(request, reset_token):
 def get_media(request):
     response = Response()
     del response['Content-Type']
-    response['X-Accel-Redirect'] = request.path
+    response['X-Accel-Redirect'] = 'protected/' + request.path
 
 # Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
