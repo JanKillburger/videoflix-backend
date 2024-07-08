@@ -5,6 +5,7 @@ import os
 from django.conf import settings
 from .tasks import convert_video
 from django_rq import get_queue
+from config import settings
 
 default_queue = get_queue("default")
 
@@ -17,7 +18,7 @@ def run_convert_video(sender, instance, created, **kwargs):
 def auto_delete_file_on_delete(sender, instance, **kwargs):
   """Delete video file when Video object is deleted."""
 
-  media_path = os.path.join(settings.BASE_DIR, "media", "videos")
+  media_path = settings.MEDIA_ROOT #os.path.join(settings.BASE_DIR, "media", "videos")
   for file in os.listdir(media_path):
     if file.startswith(str(instance.id) + "_" ):
       os.remove(os.path.join(media_path, file))
