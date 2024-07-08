@@ -102,7 +102,7 @@ def reset_password(request, reset_token):
 
 @api_view(['GET'])
 @login_required
-def get_media(request):
+def get_media(request, **kwargs):
     response = HttpResponse()
     del response['Content-Type']
     response['X-Accel-Redirect'] = '/protected' + request.path
