@@ -42,7 +42,7 @@ class SignUpView(generics.CreateAPIView):
         key = os.getenv('FERNET_KEY').encode('utf-8')
         f = Fernet(key)
         activation_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
-        send_activation_mail(user.email, activation_token)
+        default_queue.enqueue(send_activation_mail, user.email, activation_token)
         response = {
             "message": "User account has been created. Please check your mails for activation link."
         }

@@ -1,16 +1,11 @@
 from django.core.mail import send_mail
 from config.settings import DEFAULT_FROM_EMAIL
-from django_rq import job
 import os
 from .utils import delete_user_video
-
-import logging
 import subprocess
 
-logger = logging.getLogger(__name__)
 
 
-@job
 def send_activation_mail(to, activation_token):
   send_mail(
               "Your Videoflix user account has been created",
