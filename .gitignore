@@ -97,9 +97,4 @@ media/
 ### Database ###
 data
 
-### Docker ###
-Dockerfile
-docker-compose.yaml
-compose.yaml
-.dockerignore
-nginx
+
