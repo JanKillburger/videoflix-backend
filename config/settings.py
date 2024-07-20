@@ -28,15 +28,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.getenv('DEBUG') == 'True':
-	DEBUG = True
-else:
-	DEBUG = False
+DEBUG = False
 
 
 ALLOWED_HOSTS = [
-	'34.135.253.234',
-	'videoflix.jan-killburger.de',
+	'https://videoflix.jan-killburger.de',
 ]
 
 INTERNAL_IPS = [
@@ -44,7 +40,7 @@ INTERNAL_IPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-  "http://localhost:4200",
+  "https://app.videoflix.jan-killburger.de",
 ]
 
 LOGGING = {
@@ -119,10 +115,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'videoflix',
+        'NAME': os.getenv('DATABASE_NAME'),
         'USER': os.getenv('DATABASE_USERNAME'),
         'PASSWORD': os.getenv('DATABASE_USERPASSWORD'),
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
@@ -167,14 +163,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/srv/videoflix/static' #os.path.join(BASE_DIR, "static")
+STATIC_ROOT = '/srv/videoflix/static'
 
 # Custom files (Videos)
 
-if DEBUG == True:
-	MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-else:
-	MEDIA_ROOT = '/var/www/html/videoflix/protected/media/'
+
+MEDIA_ROOT = '/var/www/html/videoflix/protected/media/'
 MEDIA_URL = '/media/'
 
 # Default primary key field type
@@ -196,7 +190,7 @@ DEFAULT_FROM_EMAIL = 'no-reply@videoflix.com'
 
 RQ_QUEUES = {
     "default": {
-      "HOST": "localhost",
+      "HOST": "redis",
       "PORT": 6379,
       "DB": 0,
       "DEFAULT_TIMEOUT": 1000000,
@@ -215,3 +209,10 @@ CACHES = {
     "KEY_PREFIX": "videoflix"
   }
 }
+
+if os.getenv('DJANGO_DEVELOPMENT') == 'true':
+    DEBUG = True
+    ALLOWED_HOSTS = ['127.0.0.1']
+    CORS_ALLOWED_ORIGINS = ["http://localhost:4200",]
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
