@@ -77,10 +77,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -212,7 +212,7 @@ CACHES = {
 
 if os.getenv('DJANGO_DEVELOPMENT') == 'true':
     DEBUG = True
-    ALLOWED_HOSTS = ['127.0.0.1']
-    CORS_ALLOWED_ORIGINS = ["http://localhost:4200",]
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+    CORS_ALLOWED_ORIGINS = ["http://localhost:4200"]
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
