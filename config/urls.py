@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import include,path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
+from rest_framework.authtoken.views import obtain_auth_token
 from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media
 
 urlpatterns = [
+    path('login/', obtain_auth_token),
     path('admin/', admin.site.urls),
     path('django-rq/', include('django_rq.urls')),
     path('signup/', SignUpView.as_view(), name='signup'),

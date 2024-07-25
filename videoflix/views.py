@@ -1,5 +1,7 @@
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import generics
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.forms import ValidationError
@@ -15,6 +17,7 @@ import os
 from .tasks import send_activation_mail, send_reset_password_email
 from django_rq import get_queue
 from datetime import datetime
+import secrets
 
 default_queue = get_queue("default")
 #Tokens for resetting password expire after 10 minutes
@@ -30,12 +33,7 @@ class SignUpView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         # validate password with django built-in validators (requires User instance)
-        User = get_user_model()
-        user_to_validate = User(**serializer.validated_data)
-        try:
-            validate_password(user_to_validate.password, user_to_validate)
-        except ValidationError as error:
-            return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
+        
         # create user and user token and return it
         user = get_user_model().objects.create_user(**serializer.validated_data)
         # token = Token.objects.create(user=user)
@@ -51,7 +49,7 @@ class SignUpView(generics.CreateAPIView):
       
   
 
-@api_view(['GET'])
+@api_view(['PUT'])
 def activate_user(request):
     if 'activationtoken' in request.query_params:
         useremail_encrypted = request.query_params['activationtoken']
@@ -62,9 +60,16 @@ def activate_user(request):
         if len(result_set) == 0:
             return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
         user = result_set[0]
+        User = get_user_model()
+        user_to_validate = User(email=useremail, password=request.data['password'])
+        try:
+            validate_password(user_to_validate.password, user_to_validate)
+        except ValidationError as error:
+            return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(request.data['password'])
         user.is_active = True
         user.save()
-        token = Token.objects.get_or_create(user=user)
+        token, created = Token.objects.get_or_create(user=user)
         return Response({"message": "user has been activated", "token": token.key}, status=status.HTTP_200_OK)
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -101,11 +106,13 @@ def reset_password(request, reset_token):
             return Response({"message": "No user with this email address."}, status=400)
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def get_media(request, **kwargs):
     response = HttpResponse()
     del response['Content-Type']
     response['X-Accel-Redirect'] = '/protected' + request.path
     return response
-    #return HttpResponse("You must login to access contents", status=401)
 
 # Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
+

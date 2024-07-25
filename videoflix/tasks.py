@@ -3,8 +3,9 @@ from config.settings import DEFAULT_FROM_EMAIL
 import os
 from .utils import delete_user_video
 import subprocess
+from dotenv import load_dotenv
 
-
+load_dotenv()
 
 def send_activation_mail(to, activation_token):
   send_mail(
@@ -12,7 +13,7 @@ def send_activation_mail(to, activation_token):
               "Welcome to Videoflix!",
               "no-reply@videoflix.com",
               {to},
-              html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='http://127.0.0.1:8000/activate/?activationtoken={activation_token}'>Activate your account</a>",
+              html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='{os.getenv('FRONTEND_BASE_URL')}/signup/{activation_token}'>Activate your account</a>",
               fail_silently=False
           )
 
