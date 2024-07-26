@@ -13,7 +13,7 @@ def send_activation_mail(to, activation_token):
               "Welcome to Videoflix!",
               "no-reply@videoflix.com",
               {to},
-              html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='{os.getenv('FRONTEND_BASE_URL')}/signup/{activation_token}'>Activate your account</a>",
+              html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='{os.getenv('FRONTEND_BASE_URL')}/login/{activation_token}'>Activate your account</a>",
               fail_silently=False
           )
 

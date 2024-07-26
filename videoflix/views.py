@@ -33,7 +33,12 @@ class SignUpView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         # validate password with django built-in validators (requires User instance)
-        
+        User = get_user_model()
+        user_to_validate = User(**serializer.validated_data)
+        try:
+            validate_password(user_to_validate.password, user_to_validate)
+        except ValidationError as error:
+            return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
         # create user and user token and return it
         user = get_user_model().objects.create_user(**serializer.validated_data)
         # token = Token.objects.create(user=user)
@@ -51,8 +56,8 @@ class SignUpView(generics.CreateAPIView):
 
 @api_view(['PUT'])
 def activate_user(request):
-    if 'activationtoken' in request.query_params:
-        useremail_encrypted = request.query_params['activationtoken']
+    if 'activationtoken' in request.data:
+        useremail_encrypted = request.data['activationtoken']
         key = os.getenv('FERNET_KEY').encode('utf-8')
         f = Fernet(key)
         useremail = f.decrypt(useremail_encrypted.encode('utf-8')).decode('utf-8')
@@ -60,13 +65,6 @@ def activate_user(request):
         if len(result_set) == 0:
             return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
         user = result_set[0]
-        User = get_user_model()
-        user_to_validate = User(email=useremail, password=request.data['password'])
-        try:
-            validate_password(user_to_validate.password, user_to_validate)
-        except ValidationError as error:
-            return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
-        user.set_password(request.data['password'])
         user.is_active = True
         user.save()
         token, created = Token.objects.get_or_create(user=user)
