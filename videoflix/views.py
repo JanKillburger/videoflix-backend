@@ -109,18 +109,25 @@ def reset_password(request, reset_token):
     f = Fernet(key)
     expiry_timestamp = f.extract_timestamp(reset_token)
     if expiry_timestamp < int(datetime.now().timestamp()):
-        return Response({"message": "Expired token. Request another password reset."}, status=400)
+        return Response({"general": ["Expired token. Request another password reset.",]}, status=400)
+    user_email = f.decrypt(reset_token.encode("utf-8")).decode("utf-8")
+    result = get_user_model().objects.filter(email=user_email)
+    # validate password with django built-in validators (requires User instance)
+    User = get_user_model()
+    user_to_validate = User(email=user_email, password=request.data['password'])
+    try:
+        validate_password(user_to_validate.password, user_to_validate)
+    except ValidationError as error:
+        return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
+    if len(result) == 1:
+        user = result[0]
+        token = Token.objects.get(user=user)
+        token.delete()
+        token = Token.objects.create(user=user)
+        user.set_password(request.data['password'])
+        return Response({"token": token.key}, status=200)
     else:
-        user_email = f.decrypt(reset_token.encode("utf-8")).decode("utf-8")
-        result = get_user_model().objects.filter(email=user_email)
-        if len(result) == 1:
-            user = result[0]
-            token = Token.objects.get(user=user)
-            token.delete()
-            token = Token.objects.create(user=user)
-            return Response({"token": token.key, "message": "Password successfully reset."}, status=200)
-        else:
-            return Response({"message": "No user with this email address."}, status=400)
+        return Response({"general": ["No user with this email address.",]}, status=400)
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
