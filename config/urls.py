@@ -19,7 +19,7 @@ from django.urls import include,path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.authtoken.views import obtain_auth_token
-from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login
+from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login, check_email
 
 urlpatterns = [
     path('login/', login),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('activate/', activate_user, name='activate-user'),
     path('__debug__', include('debug_toolbar.urls')),
+    path('check-email/',check_email),
     path('request-password-reset/', request_password_reset),
     path('reset-password/<str:reset_token>', reset_password),
 ]

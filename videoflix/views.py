@@ -9,7 +9,6 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from .serializers import SignUpSerializer
 from cryptography.fernet import Fernet
@@ -75,12 +74,22 @@ def login(request):
         return Response({"email": ["This field may not be blank"]}, status=400)
     if request.data['password'] is None:
         return Response({"password": ["This field may not be blank"]}, status=400)
-    user = get_user_model().objects.get(email=request.data['email'])
-    if user is None or not user.is_active or not user.check_password(request.data['password']):
+    try:
+        user = get_user_model().objects.get(email=request.data['email'])
+    except ObjectDoesNotExist:
+        return Response({"errors": ["Wrong username and/or password"]}, status=400)
+    if not user.is_active or not user.check_password(request.data['password']):
         return Response({"errors": ["Wrong username and/or password"]}, status=400)
     token, created = Token.objects.get_or_create(user=user)
     return Response({"token": token.key}, status=200)
     
+@api_view(['POST'])
+def check_email(request):
+    if request.data['email'] and get_user_model().objects.filter(email=request.data['email']).exists():
+        return Response({"data": "Valid email"}, status=200)
+    else:
+        return Response({"error": "Invalid email"}, status=400)
+
 
 @api_view(['POST'])
 def request_password_reset(request):
