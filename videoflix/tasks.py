@@ -10,20 +10,33 @@ load_dotenv()
 def send_activation_mail(to, activation_token):
   send_mail(
               "Your Videoflix user account has been created",
-              "Welcome to Videoflix!",
-              "no-reply@videoflix.com",
+              f"Welcome to Videoflix! Follow this link to verify your email address: {os.getenv('FRONTEND_BASE_URL')}/login/{activation_token}",
+              None,
               {to},
-              html_message=f"<p>Please activate your user account by clicking on the link:</p><br><a href='{os.getenv('FRONTEND_BASE_URL')}/login/{activation_token}'>Activate your account</a>",
+              html_message=f"<p>Dear {to.split('@')[0]},</p>\
+                <p>thank you for registering with <span style='color:hsl(235, 73%, 53%);'>Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>\
+                <p><a style='background-color: hsl(235, 73%, 53%); color: white;text-decoration:none;padding: 0.5em 1.5em;border-radius:3em;'\
+                    href='{os.getenv('FRONTEND_BASE_URL')}/login/{activation_token}'>Activate account</a></p>\
+                <p>If you did not create an account with us, please disregard this email.</p>\
+                <p>Best regards,</p>\
+                <p>Your Videoflix Team</p>",
               fail_silently=False
           )
 
 def send_reset_password_email(email, reset_token):
   send_mail(
-    "Password reset requested",
-    "You have requested a password reset.",
+    "Reset your password",
+    f"To reset your password, follow this link: {os.getenv('FRONTEND_BASE_URL')}/reset-password/{reset_token}",
     None,
     {email},
-    html_message=f"<a href='{os.getenv('FRONTEND_BASE_URL')}/reset-password/{reset_token}'>To reset your password click on this link.</a>"
+    html_message=f"<p>Dear {email.split('@')[0]},</p>\
+      <p>We recently received a request to reset your password. If you made this request, please click on the following link to reset your password:</p>\
+      <p><a style='background-color: hsl(235, 73%, 53%); color: white;text-decoration:none;padding: 0.5em 1.5em;border-radius:3em;'\
+                    href='{os.getenv('FRONTEND_BASE_URL')}/reset-password/{reset_token}'>Reset password</a></p>\
+      <p>Please note that for security reasons, this link is only valid for 24 hours.</p>\
+      <p>If you did not request a password reset, please ignore this email.</p>\
+      <p>Best regards,</p>\
+      <p>Your Videoflix Team</p>"
   )
 
 def convert_video(path, obj_id):
