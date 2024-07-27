@@ -39,9 +39,8 @@ class SignUpView(generics.CreateAPIView):
             validate_password(user_to_validate.password, user_to_validate)
         except ValidationError as error:
             return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
-        # create user and user token and return it
+        # create user
         user = get_user_model().objects.create_user(**serializer.validated_data)
-        # token = Token.objects.create(user=user)
         key = os.getenv('FERNET_KEY').encode('utf-8')
         f = Fernet(key)
         activation_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
@@ -67,9 +66,21 @@ def activate_user(request):
         user = result_set[0]
         user.is_active = True
         user.save()
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({"message": "user has been activated", "token": token.key}, status=status.HTTP_200_OK)
+        return Response({"message": "user has been activated"}, status=status.HTTP_200_OK)
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def login(request):
+    if request.data['email'] is None:
+        return Response({"email": ["This field may not be blank"]}, status=400)
+    if request.data['password'] is None:
+        return Response({"password": ["This field may not be blank"]}, status=400)
+    user = get_user_model().objects.get(email=request.data['email'])
+    if user is None or not user.is_active or not user.check_password(request.data['password']):
+        return Response({"errors": ["Wrong username and/or password"]}, status=400)
+    token, created = Token.objects.get_or_create(user=user)
+    return Response({"token": token.key}, status=200)
+    
 
 @api_view(['POST'])
 def request_password_reset(request):
@@ -98,7 +109,6 @@ def reset_password(request, reset_token):
             token = Token.objects.get(user=user)
             token.delete()
             token = Token.objects.create(user=user)
-            print(token.key)
             return Response({"token": token.key, "message": "Password successfully reset."}, status=200)
         else:
             return Response({"message": "No user with this email address."}, status=400)
