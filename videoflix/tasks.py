@@ -23,7 +23,7 @@ def send_reset_password_email(email, reset_token):
     "You have requested a password reset.",
     None,
     {email},
-    html_message=f"<a href='http://127.0.0.1:8000/reset-password/{reset_token}'>Please reset your password by clicking on this link.</a>"
+    html_message=f"<a href='{os.getenv('FRONTEND_BASE_URL')}/reset-password/{reset_token}'>To reset your password click on this link.</a>"
   )
 
 def convert_video(path, obj_id):

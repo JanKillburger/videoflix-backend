@@ -88,7 +88,7 @@ def check_email(request):
     if request.data['email'] and get_user_model().objects.filter(email=request.data['email']).exists():
         return Response({"data": "Valid email"}, status=200)
     else:
-        return Response({"error": "Invalid email"}, status=400)
+        return Response({"error": ["Invalid email",]}, status=400)
 
 
 @api_view(['POST'])
