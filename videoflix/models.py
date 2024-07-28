@@ -40,7 +40,11 @@ class CustomUserManager(BaseUserManager):
             "Can add user",
             "Can view user",
             "Can change user",
-            "Can delete user"
+            "Can delete user",
+            "Can add video category",
+            "Can view video category",
+            "Can change video category",
+            "Can delete video category",
         ]
         permissions = []
         for permission in required_permissions:
@@ -59,12 +63,23 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    def __string__(self):
+    def __str__(self):
         return self.email
 
 class Video(models.Model):
     title = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
+    poster = models.CharField(max_length=100)
+    src = models.CharField(max_length=100)
     file = models.FileField(upload_to="videos")
+    categories = models.ManyToManyField('VideoCategory')
+    featured = models.BooleanField()
 
-    def __string__(self):
+    def __str__(self):
+        return self.title
+    
+class VideoCategory(models.Model):
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
         return self.title

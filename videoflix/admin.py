@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from .models import User, Video
+from .models import User, Video, VideoCategory
 from .forms import UserCreationForm, UserAdmin, UserChangeForm
 # Register your models here.
 
@@ -12,3 +12,4 @@ class CustomUserAdmin(UserAdmin):
   form = UserChangeForm
 
 admin.site.register(Video)
+admin.site.register(VideoCategory)

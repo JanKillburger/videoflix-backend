@@ -19,9 +19,10 @@ from django.urls import include,path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.authtoken.views import obtain_auth_token
-from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login, check_email
+from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login, check_email, Videos
 
 urlpatterns = [
+    path('videos/', Videos.as_view()),
     path('login/', login),
     path('admin/', admin.site.urls),
     path('django-rq/', include('django_rq.urls')),
@@ -30,7 +31,7 @@ urlpatterns = [
     path('__debug__', include('debug_toolbar.urls')),
     path('check-email/',check_email),
     path('request-password-reset/', request_password_reset),
-    path('reset-password/<str:reset_token>', reset_password),
+    path('reset-password/<str:reset_token>/', reset_password),
 ]
 
 urlpatterns += [re_path(r'^media/(?P<path>.*)', get_media)]

@@ -10,13 +10,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer, VideoSerializer
 from cryptography.fernet import Fernet
 import os
 from .tasks import send_activation_mail, send_reset_password_email
 from django_rq import get_queue
 from datetime import datetime
 import secrets
+from .models import Video
 
 default_queue = get_queue("default")
 #Tokens for resetting password expire after 10 minutes
@@ -130,13 +131,24 @@ def reset_password(request, reset_token):
         return Response({"general": ["No user with this email address.",]}, status=400)
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
 def get_media(request, **kwargs):
     response = HttpResponse()
     del response['Content-Type']
     response['X-Accel-Redirect'] = '/protected' + request.path
     return response
 
+
+class Videos(generics.ListAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = VideoSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    
 # Secure media files how to: 'https://forum.djangoproject.com/t/media-exposure-vulnerability/26863'
 
