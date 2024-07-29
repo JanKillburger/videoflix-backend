@@ -19,10 +19,14 @@ from django.urls import include,path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.authtoken.views import obtain_auth_token
-from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login, check_email, Videos, VideoCategories
+from rest_framework.routers import DefaultRouter
+from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login, check_email, Videos, VideoCategories, VideoViewSet
+
+router = DefaultRouter()
+router.register(r'videos', VideoViewSet, basename='video')
 
 urlpatterns = [
-    path('videos/', Videos.as_view()),
+    path('', include(router.urls)),
     path('categories/', VideoCategories.as_view()),
     path('login/', login),
     path('admin/', admin.site.urls),

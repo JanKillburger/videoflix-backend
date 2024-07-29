@@ -2,7 +2,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import generics
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from django.forms import ValidationError
 from django.http import HttpResponse
@@ -138,6 +138,14 @@ def get_media(request, **kwargs):
     return response
 
 
+class VideoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    
+    
+
 class Videos(generics.ListAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
@@ -150,7 +158,7 @@ class Videos(generics.ListAPIView):
         return Response(serializer.data)
     
 class VideoCategories(generics.ListAPIView):
-    queryset = VideoCategory.objects.filter(video__isnull=False)
+    queryset = VideoCategory.objects.filter(video__isnull=False).distinct()
     serializer_class = VideoCategorySerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
