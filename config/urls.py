@@ -26,17 +26,17 @@ router = DefaultRouter()
 router.register(r'videos', VideoViewSet, basename='video')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('categories/', VideoCategories.as_view()),
-    path('login/', login),
+    path('api/', include(router.urls)),
+    path('api/categories/', VideoCategories.as_view()),
+    path('api/login/', login),
     path('admin/', admin.site.urls),
     path('django-rq/', include('django_rq.urls')),
-    path('signup/', SignUpView.as_view(), name='signup'),
-    path('activate/', activate_user, name='activate-user'),
+    path('api/signup/', SignUpView.as_view(), name='signup'),
+    path('api/activate/', activate_user, name='activate-user'),
     path('__debug__', include('debug_toolbar.urls')),
-    path('check-email/',check_email),
-    path('request-password-reset/', request_password_reset),
-    path('reset-password/<str:reset_token>/', reset_password),
+    path('api/check-email/',check_email),
+    path('api/request-password-reset/', request_password_reset),
+    path('api/reset-password/<str:reset_token>/', reset_password),
 ]
 
 urlpatterns += [re_path(r'^media/(?P<path>.*)', get_media)]
