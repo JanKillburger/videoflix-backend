@@ -43,6 +43,8 @@ CORS_ALLOWED_ORIGINS = [
   "https://jan-killburger.developerakademie.org",
 ]
 
+CSRF_TRUSTED_ORIGINS = ["https://jan-killburger.developerakademie.org",]
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
