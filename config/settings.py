@@ -40,7 +40,7 @@ INTERNAL_IPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-  "https://app.videoflix.jan-killburger.de",
+  "https://jan-killburger.developerakademie.org",
 ]
 
 LOGGING = {
