@@ -45,6 +45,8 @@ CORS_ALLOWED_ORIGINS = [
 
 CSRF_TRUSTED_ORIGINS = ["https://jan-killburger.developerakademie.org",]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
