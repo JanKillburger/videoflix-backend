@@ -192,7 +192,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 RQ_QUEUES = {
     "default": {
-      "HOST": "redis",
+      "HOST": "localhost",
       "PORT": 6379,
       "DB": 0,
       "DEFAULT_TIMEOUT": 1000000,
@@ -219,12 +219,20 @@ if os.getenv('DJANGO_DEVELOPMENT') == 'true':
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USERNAME'),
-        'PASSWORD': os.getenv('DATABASE_USERPASSWORD'),
-        'HOST': 'db',
-        'PORT': '5432',
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DATABASE_NAME'),
+            'USER': os.getenv('DATABASE_USERNAME'),
+            'PASSWORD': os.getenv('DATABASE_USERPASSWORD'),
+            'HOST': 'db',
+            'PORT': '5432',
+        }
     }
-}
+    RQ_QUEUES = {
+        "default": {
+            "HOST": "redis",
+            "PORT": 6379,
+            "DB": 0,
+            "DEFAULT_TIMEOUT": 1000000,
+        },
+    }
