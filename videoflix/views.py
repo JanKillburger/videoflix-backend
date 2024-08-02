@@ -86,7 +86,7 @@ def login(request):
     
 @api_view(['POST'])
 def check_email(request):
-    if request.data['email'] and get_user_model().objects.filter(email=request.data['email']).exists():
+    if request.data['email'] and get_user_model().objects.filter(email=request.data['email'], is_active=True).exists():
         return Response({"data": "Valid email"}, status=200)
     else:
         return Response({"error": ["Invalid email",]}, status=400)
@@ -95,7 +95,7 @@ def check_email(request):
 @api_view(['POST'])
 def request_password_reset(request):
     try:
-        user = get_user_model().objects.get(email=request.data['email'])
+        user = get_user_model().objects.get(email=request.data['email'], is_active=True)
     except ObjectDoesNotExist:
         return Response(status=400)
     key = os.getenv('FERNET_KEY').encode('utf-8')
