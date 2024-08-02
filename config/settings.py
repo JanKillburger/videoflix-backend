@@ -118,7 +118,7 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME'),
         'USER': os.getenv('DATABASE_USERNAME'),
         'PASSWORD': os.getenv('DATABASE_USERPASSWORD'),
-        'HOST': 'db',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -216,3 +216,13 @@ if os.getenv('DJANGO_DEVELOPMENT') == 'true':
     CORS_ALLOWED_ORIGINS = ["http://localhost:4200"]
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USERNAME'),
+        'PASSWORD': os.getenv('DATABASE_USERPASSWORD'),
+        'HOST': 'db',
+        'PORT': '5432',
+    }
+}
