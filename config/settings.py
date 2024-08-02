@@ -32,7 +32,7 @@ DEBUG = False
 
 
 ALLOWED_HOSTS = [
-	'https://videoflix.jan-killburger.de',
+	'jan-killburger.developerakademie.org',
 ]
 
 INTERNAL_IPS = [
