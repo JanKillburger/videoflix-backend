@@ -23,10 +23,10 @@ from rest_framework.routers import DefaultRouter
 from videoflix.views import SignUpView, activate_user, request_password_reset, reset_password, get_media, login, check_email, Videos, VideoCategories, VideoViewSet
 
 router = DefaultRouter()
-router.register(r'videos', VideoViewSet, basename='video')
+router.register(r'api/videos', VideoViewSet, basename='video')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
     path('api/categories/', VideoCategories.as_view()),
     path('api/login/', login),
     path('admin/', admin.site.urls),
