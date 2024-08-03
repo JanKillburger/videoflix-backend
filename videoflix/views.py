@@ -27,6 +27,8 @@ TOKEN_EXPIRY_DURATION = 10 * 60
 class SignUpView(generics.CreateAPIView):
   serializer_class = SignUpSerializer
   queryset = get_user_model().objects.all()
+  authentication_classes = []
+  permission_classes = []
 
   def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
