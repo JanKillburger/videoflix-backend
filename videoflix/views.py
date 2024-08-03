@@ -56,6 +56,8 @@ class SignUpView(generics.CreateAPIView):
   
 
 @api_view(['PUT'])
+@permission_classes([])
+@authentication_classes([])
 def activate_user(request):
     if 'activationtoken' in request.data:
         useremail_encrypted = request.data['activationtoken']
@@ -72,6 +74,8 @@ def activate_user(request):
     return Response({"error": "Missing token"}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@permission_classes([])
+@authentication_classes([])
 def login(request):
     if request.data['email'] is None:
         return Response({"email": ["This field may not be blank"]}, status=400)
@@ -87,6 +91,8 @@ def login(request):
     return Response({"token": token.key}, status=200)
     
 @api_view(['POST'])
+@permission_classes([])
+@authentication_classes([])
 def check_email(request):
     if request.data['email'] and get_user_model().objects.filter(email=request.data['email'], is_active=True).exists():
         return Response({"data": "Valid email"}, status=200)
@@ -95,6 +101,8 @@ def check_email(request):
 
 
 @api_view(['POST'])
+@permission_classes([])
+@authentication_classes([])
 def request_password_reset(request):
     try:
         user = get_user_model().objects.get(email=request.data['email'], is_active=True)
@@ -107,6 +115,8 @@ def request_password_reset(request):
     return Response(status=200)
 
 @api_view(['POST'])
+@permission_classes([])
+@authentication_classes([])
 def reset_password(request, reset_token):
     key = os.getenv('FERNET_KEY').encode('utf-8')
     f = Fernet(key)
@@ -133,6 +143,8 @@ def reset_password(request, reset_token):
         return Response({"general": ["No user with this email address.",]}, status=400)
 
 @api_view(['GET'])
+@permission_classes([])
+@authentication_classes([])
 def get_media(request, **kwargs):
     response = HttpResponse()
     del response['Content-Type']
