@@ -68,7 +68,7 @@ class User(AbstractUser):
 
 class Video(models.Model):
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=500, default='')
+    description = models.CharField(max_length=500, blank=True)
     poster = models.CharField(max_length=100, default='https://picsum.photos/250/143')
     src = models.CharField(max_length=100, default='')
     file = models.FileField(upload_to="videos", blank=True)
