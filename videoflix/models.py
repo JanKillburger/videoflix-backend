@@ -68,10 +68,10 @@ class User(AbstractUser):
 
 class Video(models.Model):
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=500)
-    poster = models.CharField(max_length=100)
-    src = models.CharField(max_length=100)
-    file = models.FileField(upload_to="videos")
+    description = models.CharField(max_length=500, default='')
+    poster = models.CharField(max_length=100, default='https://picsum.photos/250/143')
+    src = models.CharField(max_length=100, default='')
+    file = models.FileField(upload_to="videos", blank=True)
     categories = models.ManyToManyField('VideoCategory')
     featured = models.BooleanField()
 

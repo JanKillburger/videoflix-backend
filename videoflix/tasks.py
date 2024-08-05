@@ -4,6 +4,7 @@ import os
 from .utils import delete_user_video
 import subprocess
 from dotenv import load_dotenv
+from .models import Video
 
 load_dotenv()
 
@@ -86,4 +87,7 @@ def convert_video(path, obj_id):
         -var_stream_map "v:0 v:1 v:2" {output_path_stream} \
     '
   subprocess.run(cmd, check=True, shell=True)
+  video = Video.objects.get(pk=id)
+  video.src = output_path_master
+  video.save()
   delete_user_video(path)
