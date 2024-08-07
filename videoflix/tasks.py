@@ -5,6 +5,8 @@ from .utils import delete_user_video
 import subprocess
 from dotenv import load_dotenv
 from .models import Video
+from config import settings
+from pathlib import Path
 
 load_dotenv()
 
@@ -90,4 +92,13 @@ def convert_video(path, obj_id):
   video = Video.objects.get(pk=obj_id)
   video.src = output_path_master
   video.save()
-  delete_user_video(path)
+  #-delete_user_video(path)
+
+def create_video_poster(path, obj_id):
+  poster_name = str(obj_id) + '.jpg'
+  poster_path = os.path.join(settings.MEDIA_ROOT, "posters", poster_name)
+  Path(os.path.dirname(poster_path)).mkdir(parents=True, exist_ok=True)
+  subprocess.run(f'ffmpeg -ss 00:00:00 -i {path} -frames:v 1 -update 1 {poster_path}', check=True, shell=True)
+  video = Video.objects.get(pk=obj_id)
+  video.poster = poster_name
+  video.save()
