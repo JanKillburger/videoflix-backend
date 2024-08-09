@@ -11,5 +11,15 @@ class CustomUserAdmin(UserAdmin):
   add_form = UserCreationForm
   form = UserChangeForm
 
-admin.site.register(Video)
+@admin.register(Video)
+class VideoAdmin(admin.ModelAdmin):
+  list_display = ("title", "description", "list_categories", "featured")
+  list_filter = ("categories", "featured")
+
+  def list_categories(self, obj):
+    categories = [c.title for c in obj.categories.all()]
+    return ", ".join(categories)
+    
+  list_categories.short_description = "Categories"
+
 admin.site.register(VideoCategory)
