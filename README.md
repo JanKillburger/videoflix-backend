@@ -18,3 +18,16 @@ The repository contains a Docker container setup to run the application locally.
 - PostgreSQL
 - Redis Server
 
+### Production environment
+
+You may choose any setup but in addition to what is listed in the requirements.txt file, you will need the following:
+- Postgres database
+- Redis server
+- FFmpeg
+- Nginx
+
+### Test coverage
+
+Test coverage is calculated by the coverage package. You can run it as follows:
+- run `coverage run --source='.' manage.py test videoflix` to execute the tests
+- run `coverage report` to see test coverage results

@@ -4,3 +4,4 @@ omit =
   */migrations/*
   */config/*
   manage.py
+  tests.py
