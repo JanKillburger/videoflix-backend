@@ -4,6 +4,9 @@ from rest_framework.authtoken.models import Token
 from . import models
 from django.contrib.auth import get_user_model
 from . import utils
+from datetime import datetime
+from .views import TOKEN_EXPIRY_DURATION
+
 
 # Create your tests here.
 
@@ -101,5 +104,90 @@ class ActivateUserTestCase(APITestCase):
             {
                 "activationtoken": invalid_token
             }
+        )
+        self.assertEqual(response.status_code, 400)
+
+class LoginTestCase(APITestCase):
+    def test_inactive_user(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        client = APIClient()
+        response = client.post(
+            "/api/login/",
+            {
+                "email": user.email,
+                "password": "aBcD98!?"
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_active_user_with_valid_credentials(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        user.is_active = True
+        user.save()
+        client = APIClient()
+        response = client.post(
+            "/api/login/",
+            {
+                "email": user.email,
+                "password": "aBcD98!?"
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_with_invalid_credentials(self):
+        client = APIClient()
+        response = client.post(
+            "/api/login/",
+            {
+                "email": "test",
+                "password": "test"
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+
+class RequestPasswordResetTestCase(APITestCase):
+    def test_inactive_user(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        client = APIClient()
+        response = client.post(
+            "/api/request-password-reset/",
+            {
+                "email": user.email
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_active_user(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        user.is_active = True
+        user.save()
+        client = APIClient()
+        response = client.post(
+            "/api/request-password-reset/",
+            {
+                "email": user.email
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+class ResetPasswordTestCase(APITestCase):
+    def test_with_valid_token(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        Token.objects.get_or_create(user=user)
+        token = utils.create_token(user.email, int(datetime.now().timestamp() + TOKEN_EXPIRY_DURATION))
+        client = APIClient()
+        response = client.post(
+            f"/api/reset-password/{token}/",
+            {"password": "aBcD98!?"}
+        )
+        self.assertEqual(response.status_code, 200)
+        
+    def test_with_expired_token(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        token = utils.create_token(user.email, int(datetime.now().timestamp() - TOKEN_EXPIRY_DURATION))
+        client = APIClient()
+        response = client.post(
+            f"/api/reset-password/{token}/",
+            {"password": "aBcD98!?"}
         )
         self.assertEqual(response.status_code, 400)
