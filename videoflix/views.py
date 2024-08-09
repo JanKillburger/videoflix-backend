@@ -16,7 +16,6 @@ import os
 from .tasks import send_activation_mail, send_reset_password_email
 from django_rq import get_queue
 from datetime import datetime
-import secrets
 from .models import Video, VideoCategory
 from .utils import create_token
 
@@ -107,9 +106,7 @@ def request_password_reset(request):
         user = get_user_model().objects.get(email=request.data['email'], is_active=True)
     except ObjectDoesNotExist:
         return Response(status=400)
-    key = os.getenv('FERNET_KEY').encode('utf-8')
-    f = Fernet(key)
-    reset_token = f.encrypt_at_time(user.email.encode('utf-8'), int(datetime.now().timestamp() + TOKEN_EXPIRY_DURATION)).decode('utf-8')
+    reset_token = create_token(user.email, int(datetime.now().timestamp() + TOKEN_EXPIRY_DURATION))
     default_queue.enqueue(send_reset_password_email, user.email, reset_token)
     return Response(status=200)
 
