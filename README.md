@@ -32,6 +32,9 @@ After first start of docker:
 - within the container:
     - `python3 manage.py makemigrations`
     - `python3 manage.py migrate`
+    - `python3 manage.py createsuperuser`: follow the instructions to create an admin user
+
+Open your browser at "http://127.0.0.1/admin" to access the Admin panel.
 
 ### Production environment
 
