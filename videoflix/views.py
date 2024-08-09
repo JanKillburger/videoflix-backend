@@ -18,6 +18,7 @@ from django_rq import get_queue
 from datetime import datetime
 import secrets
 from .models import Video, VideoCategory
+from .utils import create_token
 
 default_queue = get_queue("default")
 #Tokens for resetting password expire after 10 minutes
@@ -43,9 +44,7 @@ class SignUpView(generics.CreateAPIView):
             return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
         # create user
         user = get_user_model().objects.create_user(**serializer.validated_data)
-        key = os.getenv('FERNET_KEY').encode('utf-8')
-        f = Fernet(key)
-        activation_token = f.encrypt(user.email.encode('utf-8')).decode('utf-8')
+        activation_token = create_token(user.email)
         default_queue.enqueue(send_activation_mail, user.email, activation_token)
         response = {
             "message": "User account has been created. Please check your mails for activation link."
