@@ -3,6 +3,7 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from . import models
 from django.contrib.auth import get_user_model
+from . import utils
 
 # Create your tests here.
 
@@ -77,3 +78,28 @@ class CheckSignupTestCase(APITestCase):
             format="json"
         )
         self.assertEqual(response.status_code, 201)
+
+class ActivateUserTestCase(APITestCase):
+    def test_with_valid_token(self):
+        user = get_user_model().objects.create_user(email="test@test.de", password="aBcD98!?")
+        activation_token = utils.create_token(user.email)
+        client = APIClient()
+        response = client.put(
+            "/api/activate/",
+            {
+                "activationtoken": activation_token
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_user_model().objects.filter(email=user.email, is_active=True).exists(), True)
+
+    def test_with_invalid_token(self):
+        invalid_token = utils.create_token("invalid")
+        client = APIClient()
+        response = client.put(
+            "/api/activate/",
+            {
+                "activationtoken": invalid_token
+            }
+        )
+        self.assertEqual(response.status_code, 400)
