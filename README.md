@@ -46,6 +46,9 @@ You may choose any setup but in addition to what is listed in the requirements.t
 
 ### Test coverage
 
+Before running tests:
+- save a short video file 'sample-video.mp4' in the test-data folder
+
 Test coverage is calculated by the coverage package. You can run it as follows:
 - run `coverage run --source='.' manage.py test videoflix` to execute the tests
 - run `coverage report` to see test coverage results

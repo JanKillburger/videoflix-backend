@@ -11,6 +11,7 @@ services:
     volumes:
       - static:/django/static:rw
       - media:/django/media:rw
+      - ./test-data:/django/test-data
   django-rq:
     build:
       context: .

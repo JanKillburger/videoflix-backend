@@ -98,4 +98,5 @@ media/
 ### Database ###
 data
 
+test-data/sample-video.mp4
 

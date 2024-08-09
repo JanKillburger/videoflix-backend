@@ -6,6 +6,9 @@ from django.contrib.auth import get_user_model
 from . import utils
 from datetime import datetime
 from .views import TOKEN_EXPIRY_DURATION
+from . import tasks
+import os
+from django.conf import settings
 
 
 # Create your tests here.
@@ -191,3 +194,11 @@ class ResetPasswordTestCase(APITestCase):
             {"password": "aBcD98!?"}
         )
         self.assertEqual(response.status_code, 400)
+
+class CreatePosterTestCase(TestCase):
+    def test_create_poster(self):
+        #category = models.VideoCategory.objects.create(title="Test category")
+        video = models.Video.objects.create(title="Test", description="Test", featured=False)
+        #video.categories.add(category)
+        tasks.create_video_poster("/django/test-data/sample-video.mp4", video.id)
+        self.assertEqual(os.path.isfile(os.path.join(settings.MEDIA_ROOT, "posters", f"{video.id}.jpg")), True)
