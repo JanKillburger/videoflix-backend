@@ -130,10 +130,12 @@ def reset_password(request, reset_token):
         return Response({"password": error}, status=status.HTTP_400_BAD_REQUEST)
     if len(result) == 1:
         user = result[0]
-        token = Token.objects.get(user=user)
-        token.delete()
-        token = Token.objects.create(user=user)
+        token, created = Token.objects.get_or_create(user=user)
+        if not created:
+            token.delete()
+            token = Token.objects.create(user=user)
         user.set_password(request.data['password'])
+        user.save()
         return Response({"token": token.key}, status=200)
     else:
         return Response({"general": ["No user with this email address.",]}, status=400)
